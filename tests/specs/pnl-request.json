@@ -1,0 +1,20 @@
+[
+  {
+    "name": "Request P\u0026L Summary",
+    "steps": [
+      {
+        "expect": [
+          {
+            "method": "sendMessage",
+            "payload": {
+              "text": "Paid users get aggregated performance data"
+            }
+          }
+        ],
+        "send": {
+          "callback": "pnl:request"
+        }
+      }
+    ]
+  }
+]
