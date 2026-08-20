@@ -1,0 +1,32 @@
+[
+  {
+    "name": "owner's reported input sequence always receives an acknowledgement",
+    "steps": [
+      {
+        "send": { "text": "Skip for now", "userId": 9001, "chatId": 9001 },
+        "expect": [{ "method": "sendMessage", "payload": { "text": "I’m here. Tap a menu option below, or use /help for guidance." } }]
+      },
+      {
+        "send": { "text": "Skip for now", "userId": 9001, "chatId": 9001 },
+        "expect": [{ "method": "sendMessage", "payload": { "text": "I’m here. Tap a menu option below, or use /help for guidance." } }]
+      },
+      {
+        "send": { "text": "OPENAI_API_KEY=malformed-or-expired-key", "userId": 9001, "chatId": 9001 },
+        "expect": [{ "method": "sendMessage", "payload": { "text": "I’m here. Tap a menu option below, or use /help for guidance." } }]
+      },
+      {
+        "send": { "text": "Baya response", "userId": 9001, "chatId": 9001 },
+        "expect": [{ "method": "sendMessage", "payload": { "text": "I’m here. Tap a menu option below, or use /help for guidance." } }]
+      }
+    ]
+  },
+  {
+    "name": "a regular user's free-form text receives an acknowledgement",
+    "steps": [
+      {
+        "send": { "text": "show me a signal", "userId": 2002, "chatId": 2002 },
+        "expect": [{ "method": "sendMessage", "payload": { "text": "I’m here. Tap a menu option below, or use /help for guidance." } }]
+      }
+    ]
+  }
+]

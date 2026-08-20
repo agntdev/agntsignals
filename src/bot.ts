@@ -48,12 +48,29 @@ export async function buildBot(token: string, opts: BuildBotOptions = {}) {
     storage: opts.storage,
     telemetryEnv: opts.telemetryEnv,
     telemetryReporterOptions: opts.telemetryReporterOptions,
+    // grammY routes thrown handler errors here. Logging alone made a failed
+    // integration look like a silent bot to the sender; acknowledge safely and
+    // never expose the exception, key material, or provider response.
+    onError: async (err) => {
+      console.error("[forex-signal-bot] update failed", err);
+      const ctx = (err as { ctx?: Ctx }).ctx;
+      if (!ctx) return;
+      try {
+        if (ctx.callbackQuery) await ctx.answerCallbackQuery({ text: "Something went wrong. Try again." });
+        else if (ctx.chat) await ctx.reply("Something went wrong on our side. Please try again.");
+      } catch (replyError) {
+        // Telegram may reject a reply after a user blocks the bot. Preserve the
+        // original error in logs without turning a single failed update into an
+        // unhandled rejection that stops subsequent deliveries.
+        console.error("[forex-signal-bot] recovery reply failed", replyError);
+      }
+    },
   });
 
   const handlers = opts.handlers ?? (await loadHandlersFromDisk());
   for (const h of handlers) bot.use(h);
 
-  bot.on("message", (ctx) => ctx.reply("Sorry, I didn't understand that. Try /help."));
+  bot.on("message", (ctx) => ctx.reply("I couldn’t match that command. Use /start to open the menu or /help for guidance."));
 
   return bot;
 }
